@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Publication Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const PublicationTracker = () => {
+      const [publications, setPublications] = useState([]);
+      const [form, setForm] = useState({
+        title: '',
+        authors: '',
+        journal: '',
+        year: '',
+        doi: ''
+      });
+      const [filterYear, setFilterYear] = useState('');
+
+      const handleInputChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (form.title && form.authors && form.journal && form.year) {
+          setPublications([...publications, { ...form, id: Date.now() }]);
+          setForm({ title: '', authors: '', journal: '', year: '', doi: '' });
+        } else {
+          alert('Please fill in all required fields (Title, Authors, Journal, Year).');
+        }
+      };
+
+      const filteredPublications = filterYear
+        ? publications.filter(pub => pub.year === filterYear)
+        : publications;
+
+      return (
+        <div className="container mx-auto p-4">
+          <h1 className="text-3xl font-bold mb-6 text-center">Faculty Publication Tracker</h1>
+
+          {/* Form to Add Publication */}
+          <div className="mb-8 p-6 bg-white shadow-md rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Add New Publication</h2>
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
+              <input
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleInputChange}
+                placeholder="Publication Title"
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="authors"
+                value={form.authors}
+                onChange={handleInputChange}
+                placeholder="Authors (e.g., John Doe, Jane Smith)"
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="journal"
+                value={form.journal}
+                onChange={handleInputChange}
+                placeholder="Journal Name"
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="number"
+                name="year"
+                value={form.year}
+                onChange={handleInputChange}
+                placeholder="Year"
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="doi"
+                value={form.doi}
+                onChange={handleInputChange}
+                placeholder="DOI (optional)"
+                className="p-2 border rounded"
+              />
+              <button
+                type="submit"
+                className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+              >
+                Add Publication
+              </button>
+            </form>
+          </div>
+
+          {/* Filter by Year */}
+          <div className="mb-4">
+            <input
+              type="number"
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+              placeholder="Filter by Year"
+              className="p-2 border rounded"
+            />
+            {filterYear && (
+              <button
+                onClick={() => setFilterYear('')}
+                className="ml-2 bg-gray-300 text-black p-2 rounded hover:bg-gray-400"
+              >
+                Clear Filter
+              </button>
+            )}
+          </div>
+
+          {/* Publication Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse bg-white shadow-md rounded-lg">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="p-3 text-left">Title</th>
+                  <th className="p-3 text-left">Authors</th>
+                  <th className="p-3 text-left">Journal</th>
+                  <th className="p-3 text-left">Year</th>
+                  <th className="p-3 text-left">DOI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPublications.length > 0 ? (
+                  filteredPublications.map(pub => (
+                    <tr key={pub.id} className="border-b">
+                      <td className="p-3">{pub.title}</td>
+                      <td className="p-3">{pub.authors}</td>
+                      <td className="p-3">{pub.journal}</td>
+                      <td className="p-3">{pub.year}</td>
+                      <td className="p-3">
+                        {pub.doi ? (
+                          <a
+                            href={`https://doi.org/${pub.doi}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            {pub.doi}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="p-3 text-center">
+                      No publications found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<PublicationTracker />, document.getElementById('root'));
+  </script>
+</body>
+</html>

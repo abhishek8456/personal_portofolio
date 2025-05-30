@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Admin Dashboard</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 class="text-xl font-semibold mb-4">Publication Type Distribution</h2>
+      <canvas id="pubTypeChart" width="400" height="400"></canvas>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4">All Publications</h2>
+      <table id="publicationTable" class="w-full border-collapse">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="border p-2">Faculty Name</th>
+            <th class="border p-2">Department</th>
+            <th class="border p-2">Types</th>
+            <th class="border p-2">Publisher</th>
+            <th class="border p-2">Year</th>
+            <th class="border p-2">DOI/Link</th>
+            <th class="border p-2">Submitted On</th>
+          </tr>
+        </thead>
+        <tbody>
+          <h2 style="color: rgb(54, 25, 52);">provided by faculty of arts and science</h2>
+            <tr>
+              <td class="border p-2">Alagappa </td>
+              <td class="border p-2"> computer science</td>
+              <td class="border p-2">Data structure</td>
+              <td class="border p-2">Ashok kumar</td>
+              <td class="border p-2">2025</td>
+              <td class="border p-2">
+                  <a href="Data Structures and Algorithms.pdf" class="text-blue-500 hover:underline" target="_blank">click hear to see</a>
+              </td>
+              <td class="border p-2">02/08/2025</td>
+            </tr>
+           <h2 style="color: blue;"> for your better experience go on it</h2>
+        </tbody>
+      </table>
+    </div>
+    <a href="{{ url_for('view_publications') }}" class="mt-4 inline-block text-blue-500 hover:underline">Back to Publications</a>
+  </div>
+  <script>
+    const ctx = document.getElementById('pubTypeChart').getContext('2d');
+    const chartData = {{ chart_data | tojson }};
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: chartData.map(item => item[0]),
+        datasets: [{
+          data: chartData.map(item => item[1]),
+          backgroundColor: ['#4b6cb7', '#f6e05e', '#68d391'],
+          borderColor: '#ffffff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: 'Publication Types' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
